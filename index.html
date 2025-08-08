@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare ChatBot</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #2d8cf0; }
+        label { display: block; margin-top: 15px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; }
+        button { margin-top: 20px; background: #2d8cf0; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .result { margin-top: 30px; background: #e6f7ff; padding: 20px; border-radius: 8px; }
+        .consult { color: #d9534f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HealthCare ChatBot</h1>
+        <form method="post">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="symptoms">Enter your symptoms:</label>
+            <select id="symptoms" name="symptoms" required style="width:100%; height:40px; font-size:16px;">
+                <option value="" disabled selected>Select one symptom</option>
+                <option value="none">None</option>
+                {% for symptom in symptoms_list %}
+                <option value="{{ symptom }}">{{ symptom.replace('_', ' ').capitalize() }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="days">For how many days have you had these symptoms?</label>
+            <input type="number" id="days" name="days" min="1" value="1" required>
+
+            <button type="submit">Check</button>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <h2>Hello, {{ result.name }}!</h2>
+            <p><strong>Selected Symptom:</strong> {{ request.form.get('symptoms', '')|replace('_', ' ')|capitalize }}</p>
+            <p><strong>Possible Disease:</strong> {{ result.disease }}</p>
+            <p><strong>Severity:</strong> {{ result.severity }}</p>
+            <p><strong>Description:</strong> {{ result.description }}</p>
+            <p><strong>Precautions:</strong></p>
+            <ul>
+                {% for p in result.precautions %}
+                <li>{{ p }}</li>
+                {% endfor %}
+            </ul>
+            {% if result.consult %}
+            <p class="consult">You should take the consultation from a doctor.</p>
+            {% elif result.disease != 'None' %}
+            <p>It might not be that bad but you should take precautions.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
